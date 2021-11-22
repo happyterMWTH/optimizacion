@@ -1,4 +1,35 @@
-function [short_number, shortest_paths] = creacion_e3(pedidos_recibidos)
+function [short_number, shortest_paths, numero_de_pedidos] = creacion_e3(periodos)
+    horas_totales = 8;
+    totales_pedidos = [];
+    if periodos >=2 && periodos < 8
+        numero_de_pedidos = [];
+        short_number = [];
+        shortest_paths = [];
+        for j = 1:periodos
+            z = (j-1)*(10/periodos); %contador para fracciones
+            l_lim = ((-1/5)*((z-5)^2)) + 10;
+            u_lim = ((-2/5)*((z-5)^2)) + 17; 
+            l_lim = round(l_lim);
+            u_lim = round(u_lim);
+            num_pedidos = randi([l_lim u_lim] , 1, 1);
+            numero_de_pedidos = [numero_de_pedidos; num_pedidos];
+            if j == 1
+                y = 1;
+            else
+                x = horas_totales + ((j-1)*horas_totales/periodos);
+                y = ((-1/6.3)*((x-13)^2)) + 5;
+                y = round(y);
+            end
+            [pesos_min, inicio_fin] = pedir(num_pedidos);
+            short_number = [short_number; y*pesos_min];
+            shortest_paths = [shortest_paths; inicio_fin];
+            
+        end
+    else
+        disp(["Muy pocos periodos para optimizar."]);
+    end
+end
+function [short_number, shortest_paths] = pedir(pedidos_recibidos)
     %restaurantes = {'A', 'B', 'C', 'D', 'E', 'F', 'G'}
     restaurantes = [1 2 3 4 5 6 7];
     %destinos = {'H', 'I', 'J', 'K', 'L', 'M', 'N'}
@@ -30,7 +61,7 @@ function [short_number, shortest_paths] = creacion_e3(pedidos_recibidos)
     Gr = digraph(s, t, w , names);
     %T = plot(Gr);
     %view(2);
-    %% Creación de los primeros pedidos
+    %% Creación de los pedidos
     ped_rest = [];
     ped_dest = [];
     size_r = size(restaurantes);
@@ -56,5 +87,6 @@ function [short_number, shortest_paths] = creacion_e3(pedidos_recibidos)
         end
     end
     short_number = shortest_paths;
-    shortest_paths = [ped_rest ped_dest shortest_paths];
+    shortest_paths = [ped_rest ped_dest];
 end
+
